@@ -225,4 +225,115 @@ class SortingAlgorithms {
             k++;
         }
     }
+
+    async heapSort(arr) {
+        let n = arr.length;
+
+        // Build heap (rearrange array)
+        for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {
+            await this.heapify(arr, n, i);
+        }
+
+        // One by one extract an element from heap
+        for (let i = n - 1; i > 0; i--) {
+            await this.checkHalt();
+            await this.vis.setColor([0, i], 'swap');
+            await sleep();
+
+            // Move current root to end
+            let temp = arr[0];
+            arr[0] = arr[i];
+            arr[i] = temp;
+
+            await this.vis.swapBars(0, i);
+            await this.vis.resetColor([0, i]);
+            this.vis.markSorted([i]);
+
+            // call max heapify on the reduced heap
+            await this.heapify(arr, i, 0);
+        }
+        this.vis.markSorted([0]);
+    }
+
+    async heapify(arr, n, i) {
+        let largest = i; // Initialize largest as root
+        let l = 2 * i + 1; // left = 2*i + 1
+        let r = 2 * i + 2; // right = 2*i + 2
+
+        // If left child is larger than root
+        if (l < n) {
+            await this.checkHalt();
+            await this.vis.setColor([largest, l], 'compare');
+            await sleep();
+            if (arr[l] > arr[largest]) {
+                largest = l;
+            }
+            await this.vis.resetColor([i, l]);
+        }
+
+        // If right child is larger than largest so far
+        if (r < n) {
+            await this.checkHalt();
+            await this.vis.setColor([largest, r], 'compare');
+            await sleep();
+            if (arr[r] > arr[largest]) {
+                largest = r;
+            }
+            await this.vis.resetColor([i, r]);
+        }
+
+        // If largest is not root
+        if (largest !== i) {
+            await this.vis.setColor([i, largest], 'swap');
+            await sleep();
+
+            let swap = arr[i];
+            arr[i] = arr[largest];
+            arr[largest] = swap;
+
+            await this.vis.swapBars(i, largest);
+            await this.vis.resetColor([i, largest]);
+
+            // Recursively heapify the affected sub-tree
+            await this.heapify(arr, n, largest);
+        }
+    }
+
+    async shellSort(arr) {
+        let n = arr.length;
+
+        // Start with a big gap, then reduce the gap
+        for (let gap = Math.floor(n / 2); gap > 0; gap = Math.floor(gap / 2)) {
+            // Do a gapped insertion sort for this gap size.
+            for (let i = gap; i < n; i += 1) {
+                await this.checkHalt();
+
+                let temp = arr[i];
+                let j;
+
+                await this.vis.setColor([i], 'swap');
+                await sleep();
+
+                for (j = i; j >= gap && arr[j - gap] > temp; j -= gap) {
+                    await this.checkHalt();
+                    await this.vis.setColor([j, j - gap], 'compare');
+                    await sleep();
+
+                    arr[j] = arr[j - gap];
+                    await this.vis.setHeight(j, arr[j - gap]);
+
+                    await this.vis.resetColor([j, j - gap]);
+                }
+
+                arr[j] = temp;
+                await this.vis.setHeight(j, temp);
+                await this.vis.resetColor([i, j]);
+            }
+        }
+
+        // Mark all as sorted at the end
+        for(let k=0; k<n; k++) {
+            this.vis.markSorted([k]);
+        }
+    }
 }

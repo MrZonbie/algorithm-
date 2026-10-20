@@ -122,3 +122,46 @@ button:disabled {
     cursor: not-allowed;
     box-shadow: none;
 }
+
+#info-container {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 10;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(10px);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    max-width: 380px;
+    transition: opacity 0.3s ease;
+}
+
+#info-container.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#info-title {
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+    color: #38bdf8;
+}
+
+#info-description {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 15px;
+    color: #cbd5e1;
+}
+
+.complexity p {
+    font-size: 0.85rem;
+    margin-bottom: 5px;
+    color: #94a3b8;
+}
+
+.complexity strong {
+    color: #e2e8f0;
+}

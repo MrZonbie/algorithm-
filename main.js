@@ -19,10 +19,89 @@ document.addEventListener('DOMContentLoaded', () => {
     const applyCustomBtn = document.getElementById('apply-custom-btn');
     const startBtn = document.getElementById('start-btn');
 
+    // Info Elements
+    const infoContainer = document.getElementById('info-container');
+    const infoTitle = document.getElementById('info-title');
+    const infoDesc = document.getElementById('info-description');
+    const infoBest = document.getElementById('info-best');
+    const infoAvg = document.getElementById('info-avg');
+    const infoWorst = document.getElementById('info-worst');
+
+    const algorithmInfo = {
+        bubble: {
+            title: "Bubble Sort",
+            desc: "Um algoritmo simples que percorre a lista repetidas vezes, compara elementos adjacentes e os troca se estiverem na ordem errada. O maior elemento 'flutua' para o topo a cada iteração.",
+            best: "O(n)",
+            avg: "O(n²)",
+            worst: "O(n²)"
+        },
+        selection: {
+            title: "Selection Sort",
+            desc: "Divide a lista em duas partes: a sublista ordenada e a sublista não ordenada. Encontra repetidamente o menor elemento da parte não ordenada e o move para o final da parte ordenada.",
+            best: "O(n²)",
+            avg: "O(n²)",
+            worst: "O(n²)"
+        },
+        insertion: {
+            title: "Insertion Sort",
+            desc: "Constrói a matriz final classificada um item de cada vez. É muito mais eficiente em listas pequenas do que algoritmos mais avançados. Funciona movendo o elemento atual para sua posição correta na parte já ordenada.",
+            best: "O(n)",
+            avg: "O(n²)",
+            worst: "O(n²)"
+        },
+        quick: {
+            title: "Quick Sort",
+            desc: "Um algoritmo de divisão e conquista que escolhe um elemento 'pivô' e particiona o array ao redor do pivô, colocando os menores à esquerda e os maiores à direita. É geralmente muito rápido na prática.",
+            best: "O(n log n)",
+            avg: "O(n log n)",
+            worst: "O(n²)"
+        },
+        merge: {
+            title: "Merge Sort",
+            desc: "Um algoritmo eficiente, estável e de divisão e conquista. Divide a lista não ordenada em n sublistas e, em seguida, mescla repetidamente as sublistas para produzir novas listas ordenadas.",
+            best: "O(n log n)",
+            avg: "O(n log n)",
+            worst: "O(n log n)"
+        },
+        heap: {
+            title: "Heap Sort",
+            desc: "Uma técnica de ordenação baseada em comparação que usa uma estrutura de dados de árvore binária chamada Max-Heap. O maior elemento é movido para o final e o processo se repete para os elementos restantes.",
+            best: "O(n log n)",
+            avg: "O(n log n)",
+            worst: "O(n log n)"
+        },
+        shell: {
+            title: "Shell Sort",
+            desc: "Uma generalização do Insertion Sort que permite a troca de itens muito distantes. A ideia é organizar a lista de forma que, a partir de qualquer índice i, pegar os elementos com um intervalo g produza uma lista ordenada.",
+            best: "O(n log n)",
+            avg: "O(n(log n)²)",
+            worst: "O(n²)"
+        }
+    };
+
+    function updateAlgorithmInfo() {
+        const algo = algorithmSelect.value;
+        const info = algorithmInfo[algo];
+
+        if (info) {
+            infoTitle.textContent = info.title;
+            infoDesc.textContent = info.desc;
+            infoBest.textContent = info.best;
+            infoAvg.textContent = info.avg;
+            infoWorst.textContent = info.worst;
+            infoContainer.classList.remove('hidden');
+        } else {
+            infoContainer.classList.add('hidden');
+        }
+    }
+
     // Initialization
     generateRandomArray();
+    updateAlgorithmInfo();
 
     // Event Listeners
+    algorithmSelect.addEventListener('change', updateAlgorithmInfo);
+
     speedSlider.addEventListener('input', (e) => {
         window.appState.speed = parseInt(e.target.value);
     });
@@ -83,6 +162,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     break;
                 case 'merge':
                     await sorter.mergeSort(arrayToSort);
+                    break;
+                case 'heap':
+                    await sorter.heapSort(arrayToSort);
+                    break;
+                case 'shell':
+                    await sorter.shellSort(arrayToSort);
                     break;
             }
             // Update current array if finished successfully

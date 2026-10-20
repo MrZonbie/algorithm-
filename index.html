@@ -19,6 +19,8 @@
                     <option value="insertion">Insertion Sort</option>
                     <option value="quick">Quick Sort</option>
                     <option value="merge">Merge Sort</option>
+                    <option value="heap">Heap Sort</option>
+                    <option value="shell">Shell Sort</option>
                 </select>
             </div>
 
@@ -37,6 +39,16 @@
                 <button id="apply-custom-btn">Aplicar Valores</button>
                 <button id="start-btn" class="primary">Iniciar Ordenação</button>
             </div>
+        </div>
+    </div>
+
+    <div id="info-container" class="hidden">
+        <h2 id="info-title">Nome do Algoritmo</h2>
+        <p id="info-description">Descrição do algoritmo aqui.</p>
+        <div class="complexity">
+            <p><strong>Complexidade de Tempo (Melhor):</strong> <span id="info-best"></span></p>
+            <p><strong>Complexidade de Tempo (Média):</strong> <span id="info-avg"></span></p>
+            <p><strong>Complexidade de Tempo (Pior):</strong> <span id="info-worst"></span></p>
         </div>
     </div>
 

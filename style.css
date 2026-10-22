@@ -277,6 +277,7 @@ button:disabled {
     flex-direction: row;
     gap: 25px;
     height: 100%;
+    min-width: 0; /* allows flex children to shrink */
 }
 
 .canvas-wrapper {

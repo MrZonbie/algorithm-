@@ -140,8 +140,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 infoContainer.classList.remove('hidden');
             }
 
-            // Trigger resize to fix WebGL renderer size
-            window.dispatchEvent(new Event('resize'));
+            // Trigger resize to fix WebGL renderer size after layout changes
+            setTimeout(() => {
+                window.dispatchEvent(new Event('resize'));
+            }, 50);
 
             // Re-generate bars to match new size
             visualizer1.generateBars(currentArray);

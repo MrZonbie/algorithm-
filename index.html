@@ -7,59 +7,84 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="ui-container">
+    <div class="page-background"></div>
+    <header class="header">
         <h1>Visualizador 3D de Ordenação</h1>
+    </header>
 
-        <div class="controls">
-            <div class="control-group mode-toggle">
-                <label><input type="radio" name="mode" value="single" checked> Simples</label>
-                <label><input type="radio" name="mode" value="compare"> Comparação</label>
+    <div class="main-layout">
+        <div id="ui-container">
+            <div class="controls">
+                <div class="control-group mode-toggle">
+                    <label class="radio-label"><input type="radio" name="mode" value="single" checked> <span class="radio-custom"></span> Simples</label>
+                    <label class="radio-label"><input type="radio" name="mode" value="compare"> <span class="radio-custom"></span> Comparação</label>
+                </div>
+
+                <div class="control-group">
+                    <label for="algorithm-select">Algoritmo (Principal):</label>
+                    <div class="select-wrapper">
+                        <select id="algorithm-select">
+                            <option value="heap">Heap Sort</option>
+                            <option value="bubble">Bubble Sort</option>
+                            <option value="selection">Selection Sort</option>
+                            <option value="insertion">Insertion Sort</option>
+                            <option value="quick">Quick Sort</option>
+                            <option value="merge">Merge Sort</option>
+                            <option value="shell">Shell Sort</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="control-group hidden" id="algo-2-group">
+                    <label for="algorithm-select-2">Algoritmo (Comparação):</label>
+                    <div class="select-wrapper">
+                        <select id="algorithm-select-2">
+                            <option value="merge" selected>Merge Sort</option>
+                            <option value="bubble">Bubble Sort</option>
+                            <option value="selection">Selection Sort</option>
+                            <option value="insertion">Insertion Sort</option>
+                            <option value="quick">Quick Sort</option>
+                            <option value="heap">Heap Sort</option>
+                            <option value="shell">Shell Sort</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="custom-input">Valores (separados por vírgula):</label>
+                    <textarea id="custom-input" rows="3" placeholder="ex: 10, 22, 46, 51, 34..."></textarea>
+                </div>
+
+                <div class="control-group">
+                    <label for="speed-slider">Velocidade</label>
+                    <input type="range" id="speed-slider" min="10" max="1000" value="100" dir="rtl">
+                </div>
+
+                <div class="button-group">
+                    <button id="generate-btn" class="secondary-btn">Gerar Aleatório</button>
+                    <button id="apply-custom-btn" class="secondary-btn">Aplicar Valores</button>
+                    <button id="start-btn" class="primary-btn">Iniciar Ordenação</button>
+                </div>
             </div>
+        </div>
 
-            <div class="control-group">
-                <label for="algorithm-select">Algoritmo (Principal):</label>
-                <select id="algorithm-select">
-                    <option value="bubble">Bubble Sort</option>
-                    <option value="selection">Selection Sort</option>
-                    <option value="insertion">Insertion Sort</option>
-                    <option value="quick">Quick Sort</option>
-                    <option value="merge">Merge Sort</option>
-                    <option value="heap">Heap Sort</option>
-                    <option value="shell">Shell Sort</option>
-                </select>
+        <div id="main-wrapper">
+            <div id="canvas-wrapper-1" class="canvas-wrapper">
+                <div class="canvas-border">
+                    <div id="canvas-container-1" class="three-container"></div>
+                </div>
+                <div id="canvas-label-1" class="canvas-label"></div>
             </div>
-
-            <div class="control-group hidden" id="algo-2-group">
-                <label for="algorithm-select-2">Algoritmo (Comparação):</label>
-                <select id="algorithm-select-2">
-                    <option value="bubble">Bubble Sort</option>
-                    <option value="selection">Selection Sort</option>
-                    <option value="insertion">Insertion Sort</option>
-                    <option value="quick">Quick Sort</option>
-                    <option value="merge" selected>Merge Sort</option>
-                    <option value="heap">Heap Sort</option>
-                    <option value="shell">Shell Sort</option>
-                </select>
-            </div>
-
-            <div class="control-group">
-                <label for="custom-input">Valores (separados por vírgula):</label>
-                <input type="text" id="custom-input" placeholder="ex: 5, 2, 8, 1, 9">
-            </div>
-
-            <div class="control-group">
-                <label for="speed-slider">Velocidade:</label>
-                <input type="range" id="speed-slider" min="10" max="1000" value="100" dir="rtl">
-            </div>
-
-            <div class="button-group">
-                <button id="generate-btn">Gerar Aleatório</button>
-                <button id="apply-custom-btn">Aplicar Valores</button>
-                <button id="start-btn" class="primary">Iniciar Ordenação</button>
+            <div id="canvas-wrapper-2" class="canvas-wrapper hidden">
+                <div class="canvas-border">
+                    <div id="canvas-container-2" class="three-container"></div>
+                </div>
+                <div id="canvas-label-2" class="canvas-label"></div>
             </div>
         </div>
     </div>
 
+    <!-- Info container is floating -->
     <div id="info-container" class="hidden">
         <h2 id="info-title">Nome do Algoritmo</h2>
         <p id="info-description">Descrição do algoritmo aqui.</p>
@@ -70,20 +95,8 @@
         </div>
     </div>
 
-    <div id="main-wrapper">
-        <div id="canvas-wrapper-1" class="canvas-wrapper">
-            <div id="canvas-label-1" class="canvas-label"></div>
-            <div id="canvas-container-1" class="three-container"></div>
-        </div>
-        <div id="canvas-wrapper-2" class="canvas-wrapper hidden">
-            <div id="canvas-label-2" class="canvas-label"></div>
-            <div id="canvas-container-2" class="three-container"></div>
-        </div>
-    </div>
-
     <!-- Three.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <!-- OrbitControls for camera interaction -->
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
     <!-- Application Scripts -->

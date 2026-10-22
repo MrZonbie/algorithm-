@@ -11,14 +11,32 @@
         <h1>Visualizador 3D de Ordenação</h1>
 
         <div class="controls">
+            <div class="control-group mode-toggle">
+                <label><input type="radio" name="mode" value="single" checked> Simples</label>
+                <label><input type="radio" name="mode" value="compare"> Comparação</label>
+            </div>
+
             <div class="control-group">
-                <label for="algorithm-select">Algoritmo:</label>
+                <label for="algorithm-select">Algoritmo (Principal):</label>
                 <select id="algorithm-select">
                     <option value="bubble">Bubble Sort</option>
                     <option value="selection">Selection Sort</option>
                     <option value="insertion">Insertion Sort</option>
                     <option value="quick">Quick Sort</option>
                     <option value="merge">Merge Sort</option>
+                    <option value="heap">Heap Sort</option>
+                    <option value="shell">Shell Sort</option>
+                </select>
+            </div>
+
+            <div class="control-group hidden" id="algo-2-group">
+                <label for="algorithm-select-2">Algoritmo (Comparação):</label>
+                <select id="algorithm-select-2">
+                    <option value="bubble">Bubble Sort</option>
+                    <option value="selection">Selection Sort</option>
+                    <option value="insertion">Insertion Sort</option>
+                    <option value="quick">Quick Sort</option>
+                    <option value="merge" selected>Merge Sort</option>
                     <option value="heap">Heap Sort</option>
                     <option value="shell">Shell Sort</option>
                 </select>
@@ -52,7 +70,16 @@
         </div>
     </div>
 
-    <div id="canvas-container"></div>
+    <div id="main-wrapper">
+        <div id="canvas-wrapper-1" class="canvas-wrapper">
+            <div id="canvas-label-1" class="canvas-label"></div>
+            <div id="canvas-container-1" class="three-container"></div>
+        </div>
+        <div id="canvas-wrapper-2" class="canvas-wrapper hidden">
+            <div id="canvas-label-2" class="canvas-label"></div>
+            <div id="canvas-container-2" class="three-container"></div>
+        </div>
+    </div>
 
     <!-- Three.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>

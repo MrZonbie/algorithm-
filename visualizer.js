@@ -5,7 +5,10 @@ class Visualizer3D {
         this.scene.background = new THREE.Color(0x1a1a2e);
         this.scene.fog = new THREE.FogExp2(0x1a1a2e, 0.02);
 
-        this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const width = this.container.clientWidth || window.innerWidth;
+        const height = this.container.clientHeight || window.innerHeight;
+
+        this.camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 1000);
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
         this.controls = null;
 
@@ -22,7 +25,9 @@ class Visualizer3D {
     }
 
     init() {
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        const width = this.container.clientWidth || window.innerWidth;
+        const height = this.container.clientHeight || window.innerHeight;
+        this.renderer.setSize(width, height);
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         this.container.appendChild(this.renderer.domElement);
@@ -168,9 +173,12 @@ class Visualizer3D {
     }
 
     onWindowResize() {
-        this.camera.aspect = window.innerWidth / window.innerHeight;
+        const width = this.container.clientWidth;
+        const height = this.container.clientHeight;
+        if (width === 0 || height === 0) return; // Prevent errors if container is hidden
+        this.camera.aspect = width / height;
         this.camera.updateProjectionMatrix();
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.renderer.setSize(width, height);
     }
 
     animate() {

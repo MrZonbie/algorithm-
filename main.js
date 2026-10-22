@@ -6,13 +6,23 @@ window.appState = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    const visualizer = new Visualizer3D('canvas-container');
-    const sorter = new SortingAlgorithms(visualizer);
+    const visualizer1 = new Visualizer3D('canvas-container-1');
+    const visualizer2 = new Visualizer3D('canvas-container-2');
+    const sorter1 = new SortingAlgorithms(visualizer1);
+    const sorter2 = new SortingAlgorithms(visualizer2);
 
     let currentArray = [];
+    let isCompareMode = false;
 
     // UI Elements
+    const modeRadios = document.getElementsByName('mode');
     const algorithmSelect = document.getElementById('algorithm-select');
+    const algorithmSelect2 = document.getElementById('algorithm-select-2');
+    const algo2Group = document.getElementById('algo-2-group');
+    const canvasWrapper2 = document.getElementById('canvas-wrapper-2');
+    const canvasLabel1 = document.getElementById('canvas-label-1');
+    const canvasLabel2 = document.getElementById('canvas-label-2');
+
     const customInput = document.getElementById('custom-input');
     const speedSlider = document.getElementById('speed-slider');
     const generateBtn = document.getElementById('generate-btn');
@@ -89,9 +99,26 @@ document.addEventListener('DOMContentLoaded', () => {
             infoBest.textContent = info.best;
             infoAvg.textContent = info.avg;
             infoWorst.textContent = info.worst;
-            infoContainer.classList.remove('hidden');
+
+            // Only show info container in single mode
+            if (!isCompareMode) {
+                infoContainer.classList.remove('hidden');
+            } else {
+                infoContainer.classList.add('hidden');
+            }
         } else {
             infoContainer.classList.add('hidden');
+        }
+        updateLabels();
+    }
+
+    function updateLabels() {
+        if (isCompareMode) {
+            canvasLabel1.textContent = algorithmInfo[algorithmSelect.value].title;
+            canvasLabel2.textContent = algorithmInfo[algorithmSelect2.value].title;
+        } else {
+            canvasLabel1.textContent = "";
+            canvasLabel2.textContent = "";
         }
     }
 
@@ -100,7 +127,32 @@ document.addEventListener('DOMContentLoaded', () => {
     updateAlgorithmInfo();
 
     // Event Listeners
+    modeRadios.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            isCompareMode = (e.target.value === 'compare');
+            if (isCompareMode) {
+                algo2Group.classList.remove('hidden');
+                canvasWrapper2.classList.remove('hidden');
+                infoContainer.classList.add('hidden');
+            } else {
+                algo2Group.classList.add('hidden');
+                canvasWrapper2.classList.add('hidden');
+                infoContainer.classList.remove('hidden');
+            }
+
+            // Trigger resize to fix WebGL renderer size
+            window.dispatchEvent(new Event('resize'));
+
+            // Re-generate bars to match new size
+            visualizer1.generateBars(currentArray);
+            if(isCompareMode) visualizer2.generateBars(currentArray);
+
+            updateAlgorithmInfo();
+        });
+    });
+
     algorithmSelect.addEventListener('change', updateAlgorithmInfo);
+    algorithmSelect2.addEventListener('change', updateLabels);
 
     speedSlider.addEventListener('input', (e) => {
         window.appState.speed = parseInt(e.target.value);
@@ -126,52 +178,57 @@ document.addEventListener('DOMContentLoaded', () => {
                 haltSorting();
                 setTimeout(() => {
                     currentArray = vals;
-                    visualizer.generateBars(currentArray);
+                    visualizer1.generateBars(currentArray);
+                    if(isCompareMode) visualizer2.generateBars(currentArray);
                 }, window.appState.speed + 50);
             } else {
                 currentArray = vals;
-                visualizer.generateBars(currentArray);
+                visualizer1.generateBars(currentArray);
+                if(isCompareMode) visualizer2.generateBars(currentArray);
             }
         } else {
             alert("Por favor, insira números válidos separados por vírgula.");
         }
     });
 
+    async function runAlgorithm(algoName, sorterInstance, arrayCopy) {
+        switch (algoName) {
+            case 'bubble': await sorterInstance.bubbleSort(arrayCopy); break;
+            case 'selection': await sorterInstance.selectionSort(arrayCopy); break;
+            case 'insertion': await sorterInstance.insertionSort(arrayCopy); break;
+            case 'quick': await sorterInstance.quickSort(arrayCopy); break;
+            case 'merge': await sorterInstance.mergeSort(arrayCopy); break;
+            case 'heap': await sorterInstance.heapSort(arrayCopy); break;
+            case 'shell': await sorterInstance.shellSort(arrayCopy); break;
+        }
+        return arrayCopy;
+    }
+
     startBtn.addEventListener('click', async () => {
         if (window.appState.isSorting) return;
 
-        const algorithm = algorithmSelect.value;
         setSortingState(true);
 
         try {
-            // Create a copy of the array for sorting
-            const arrayToSort = [...currentArray];
+            const arr1 = [...currentArray];
 
-            switch (algorithm) {
-                case 'bubble':
-                    await sorter.bubbleSort(arrayToSort);
-                    break;
-                case 'selection':
-                    await sorter.selectionSort(arrayToSort);
-                    break;
-                case 'insertion':
-                    await sorter.insertionSort(arrayToSort);
-                    break;
-                case 'quick':
-                    await sorter.quickSort(arrayToSort);
-                    break;
-                case 'merge':
-                    await sorter.mergeSort(arrayToSort);
-                    break;
-                case 'heap':
-                    await sorter.heapSort(arrayToSort);
-                    break;
-                case 'shell':
-                    await sorter.shellSort(arrayToSort);
-                    break;
+            if (isCompareMode) {
+                const arr2 = [...currentArray];
+                const algo1 = algorithmSelect.value;
+                const algo2 = algorithmSelect2.value;
+
+                // Run both concurrently
+                const [res1, res2] = await Promise.all([
+                    runAlgorithm(algo1, sorter1, arr1),
+                    runAlgorithm(algo2, sorter2, arr2)
+                ]);
+
+                // Keep the result of the first algorithm as the base state
+                currentArray = res1;
+            } else {
+                currentArray = await runAlgorithm(algorithmSelect.value, sorter1, arr1);
             }
-            // Update current array if finished successfully
-            currentArray = arrayToSort;
+
         } catch (e) {
             if (e.message !== "Sorting Halted") {
                 console.error(e);
@@ -187,7 +244,8 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let i = 0; i < size; i++) {
             currentArray.push(Math.floor(Math.random() * max) + 5);
         }
-        visualizer.generateBars(currentArray);
+        visualizer1.generateBars(currentArray);
+        if(isCompareMode) visualizer2.generateBars(currentArray);
         customInput.value = currentArray.join(', ');
     }
 
@@ -202,11 +260,13 @@ document.addEventListener('DOMContentLoaded', () => {
             startBtn.disabled = true;
             generateBtn.disabled = true;
             applyCustomBtn.disabled = true;
+            modeRadios.forEach(radio => radio.disabled = true);
             startBtn.textContent = "Ordenando...";
         } else {
             startBtn.disabled = false;
             generateBtn.disabled = false;
             applyCustomBtn.disabled = false;
+            modeRadios.forEach(radio => radio.disabled = false);
             startBtn.textContent = "Iniciar Ordenação";
         }
     }
